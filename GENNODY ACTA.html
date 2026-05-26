@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acta de Servicio Técnico</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+        }
+        body {
+            background-color: #525659;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .controls-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            width: 850px;
+            flex-wrap: wrap;
+        }
+        
+        .controls-bar button {
+            padding: 10px 15px;
+            border: 1px solid #333;
+            background-color: #007bff;
+            color: white;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .controls-bar button:hover {
+            background-color: #0056b3;
+        }
+        
+        .controls-bar button.danger {
+            background-color: #dc3545;
+        }
+        
+        .controls-bar button.danger:hover {
+            background-color: #c82333;
+        }
+        
+        .controls-bar button.success {
+            background-color: #28a745;
+        }
+        
+        .controls-bar button.success:hover {
+            background-color: #218838;
+        }
+        
+        .status-message {
+            padding: 8px 12px;
+            border-radius: 3px;
+            font-size: 11px;
+            min-width: 200px;
+            text-align: center;
+        }
+        
+        .status-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .page {
+            background-color: #fff;
+            width: 850px;
+            padding: 30px 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        
+        /* Contenedores Flex y Grid */
+        .flex { display: flex; }
+        .flex-col { display: flex; flex-direction: column; }
+        .space-between { justify-content: space-between; }
+        .align-center { align-items: center; }
+        .align-start { align-items: flex-start; }
+        .gap-5 { gap: 5px; }
+        .gap-10 { gap: 10px; }
+        .gap-20 { gap: 20px; }
+
+        h1 { font-size: 20px; margin: 0; font-weight: bold; }
+        h2 { font-size: 16px; margin: 0; font-weight: bold; text-transform: uppercase; }
+        h3 { font-size: 11px; margin: 10px 0 5px 0; font-weight: bold; text-transform: uppercase; }
+        
+        /* Inputs y Elementos Editables */
+        input, textarea {
+            outline: none;
+            padding: 2px;
+        }
+        input[type="text"]:focus, textarea:focus {
+            background-color: #f0f8ff;
+            box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+        }
+        
+        input.required:invalid {
+            border-color: #dc3545 !important;
+            background-color: #fff5f5;
+        }
+        
+        .input-box { border: 1px solid #000; height: 16px; width: 100%; }
+        .checkbox { width: 12px; height: 12px; margin: 0; cursor: pointer; flex-shrink: 0;}
+        .text-area { border: 1px solid #000; width: 100%; height: 50px; resize: none; }
+        
+        /* Header Grid */
+        .header-top { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .header-title-container { display: flex; align-items: center; gap: 60px; margin-top: 30px; }
+        .header-grid-right {
+            display: grid;
+            grid-template-columns: 80px 120px;
+            gap: 3px 5px;
+            align-items: center;
+        }
+        .header-grid-right label { text-align: left; font-size: 9px;}
+
+        /* Cliente Grid */
+        .cliente-grid {
+            display: grid;
+            grid-template-columns: 180px 1fr 50px 120px;
+            gap: 5px 10px;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .cliente-grid-row2 {
+            display: grid;
+            grid-template-columns: 180px 1fr 50px 120px;
+            gap: 5px 10px;
+            align-items: center;
+        }
+        .distrito-prov {
+            display: grid;
+            grid-template-columns: 50px 100px;
+            gap: 5px;
+            align-items: center;
+        }
+
+        /* Materiales Grid */
+        .materiales-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr) 1.2fr;
+            gap: 2px 10px;
+            margin-top: 5px;
+        }
+        .mat-item { display: flex; justify-content: space-between; align-items: center; height: 18px;}
+        .mat-item .input-box { width: 40px; }
+        
+        /* Tablas editables */
+        table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+        th, td {
+            border: 1px solid #000;
+            text-align: center;
+            padding: 0;
+            font-size: 9px;
+            height: 18px;
+        }
+        th { background-color: #e6e6e6; font-weight: bold; padding: 2px; }
+        .col-ir { width: 25px; }
+        .table-input { width: 100%; height: 100%; border: none; background: transparent; text-align: center; font-size: 9px; }
+
+        /* Info Técnica Grid */
+        .info-tecnica-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 5px; }
+        .tech-box { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; justify-content: flex-end;}
+        .tech-box label { flex-grow: 1; text-align: right;}
+        .tech-input { width: 60px; height: 16px; border: 1px solid #000; }
+        .tech-input-long { width: 120px; height: 16px; border: 1px solid #000; }
+
+        /* Mantenimiento Grid */
+        .mantenimiento-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
+
+        /* Comentarios Grid */
+        .comentarios-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
+        .comentarios-box { border: 1px solid #000; height: 60px; width: 100%; resize: none; }
+
+        /* Nota Legal */
+        .nota-legal {
+            border: 1px solid #000;
+            padding: 5px;
+            font-size: 7.5px;
+            text-align: justify;
+            margin-top: 10px;
+            line-height: 1.1;
+        }
+        
+        hr.divider { border: 0; border-top: 1px solid #000; margin: 10px 0; }
+        
+        /* Inputs tipo linea */
+        .line-input { border: none; border-bottom: 1px solid #000; background: transparent; }
+        .line-input-dotted { border: none; border-bottom: 1px dotted #000; background: transparent; flex-grow: 1; margin: 0 5px; }
+        
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .controls-bar {
+                display: none;
+            }
+            .page {
+                box-shadow: none;
+                width: 100%;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="controls-bar">
+    <button class="success" onclick="guardarDatos()">💾 Guardar</button>
+    <button onclick="cargarDatos()">📂 Cargar Último</button>
+    <button onclick="exportarJSON()">📥 Exportar JSON</button>
+    <button onclick="limpiarFormulario()">🗑️ Limpiar</button>
+    <button onclick="window.print()">🖨️ Imprimir</button>
+    <div id="statusMessage" class="status-message" style="display:none;"></div>
+</div>
+
+<div class="page">
+    <div class="header-top">
+        <div class="header-title-container">
+            <h2>ACTA DE SERVICIO TÉCNICO</h2>
+            <h1>N° 84855307</h1>
+        </div>
+        <div class="header-grid-right">
+            <label>Fecha</label><input type="text" class="input-box" data-field="fecha">
+            <label>SOT</label><input type="text" class="input-box" data-field="sot">
+            <label>Hora Inicio</label><input type="text" class="input-box" data-field="horaInicio">
+            <label>Hora Salida</label><input type="text" class="input-box" data-field="horaSalida">
+            <label>N° Cintillo</label><input type="text" class="input-box" data-field="cintillo">
+            <label>Plano</label><input type="text" class="input-box" data-field="plano">
+            <label>FAT</label><input type="text" class="input-box" data-field="fat">
+            <label>N° BORNE FAT</label><input type="text" class="input-box" data-field="borneFat">
+        </div>
+    </div>
+
+    <h3>INFORMACIÓN DEL CLIENTE</h3>
+    <div class="cliente-grid">
+        <label>Razón Social/ Nombres y Apellidos</label>
+        <input type="text" class="input-box" data-field="razonSocial">
+        <label style="text-align: right; padding-right: 5px;">Código<br>Cliente</label>
+        <input type="text" class="input-box" data-field="codigoCliente">
+    </div>
+    
+    <div class="cliente-grid-row2">
+        <label>Dirección</label>
+        <textarea class="input-box" style="height: 35px; resize: none;" data-field="direccion"></textarea>
+        <div class="flex-col space-between" style="height: 35px;">
+            <div class="distrito-prov"><label>Distrito</label><input type="text" class="input-box" data-field="distrito"></div>
+            <div class="distrito-prov"><label>Provincia</label><input type="text" class="input-box" data-field="provincia"></div>
+        </div>
+        <div class="flex-col" style="height: 35px; justify-content: flex-end;">
+            <div class="distrito-prov"><label style="text-align: right; padding-right: 5px;">Teléfono</label><input type="text" class="input-box" data-field="telefono"></div>
+        </div>
+    </div>
+
+    <div class="flex space-between align-center" style="margin-top: 10px;">
+        <div class="flex align-center gap-10">
+            <strong>a) Persona que atendió al personal técnico:</strong>
+            <label class="flex align-center gap-5">Titular <input type="checkbox" class="checkbox" data-field="personaTitular"></label>
+            <label class="flex align-center gap-5">Usuario <input type="checkbox" class="checkbox" data-field="personaUsuario"></label>
+            <label class="flex align-center gap-5">Otros <input type="checkbox" class="checkbox" data-field="personaOtros"></label>
+            <div class="flex align-center gap-5">Relación con<br>titular o usuario:</div>
+            <input type="text" class="line-input" style="width: 120px;" data-field="relacionPersona">
+        </div>
+        <div class="flex align-center gap-10">
+            <strong>b) El cliente brindó las facilidades para la visita técnica:</strong>
+            <label class="flex align-center gap-5">SI <input type="checkbox" class="checkbox" data-field="facilidadesSi"></label>
+            <label class="flex align-center gap-5">NO <input type="checkbox" class="checkbox" data-field="facilidadesNo"></label>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <h3>I. SERVICIO TÉCNICO</h3>
+    
+    <strong>1.1 PLATAFORMA (aplica para residencial y claro empresas)</strong>
+    <div class="flex align-center gap-20" style="margin: 5px 0 10px 10px;">
+        <label class="flex align-center gap-5">HFC <input type="checkbox" class="checkbox" data-field="plataformaHFC"></label>
+        <label class="flex align-center gap-5">FTTH <input type="checkbox" class="checkbox" data-field="plataformaFTTH"></label>
+        <label class="flex align-center gap-5">LTE <input type="checkbox" class="checkbox" data-field="plataformaLTE"></label>
+        <label class="flex align-center gap-5">DTH <input type="checkbox" class="checkbox" data-field="plataformaDTH"></label>
+        <label class="flex align-center gap-5">OTRO <input type="checkbox" class="checkbox" data-field="plataformaOTRO"></label>
+        <div class="flex align-center gap-5" style="margin-left: 50px;">Plan: <input type="text" class="line-input" style="width: 250px;" data-field="plan"></div>
+    </div>
+
+    <strong>1.2 SERVICIO REALIZADO</strong>
+    <div class="flex align-center space-between" style="margin: 5px 0 10px 10px; width: 95%;">
+        <label class="flex align-center gap-5">Instalación <input type="checkbox" class="checkbox" data-field="servicioInstalacion"></label>
+        <label class="flex align-center gap-5">Post Venta <input type="checkbox" class="checkbox" data-field="servicioPostVenta"></label>
+        <label class="flex align-center gap-5">Mantenimiento/ Atención Reclamo Calidad <input type="checkbox" class="checkbox" data-field="servicioMantenimiento"></label>
+        <label class="flex align-center gap-5">Retiro equipos <input type="checkbox" class="checkbox" data-field="servicioRetiroEquipos"></label>
+        <label class="flex align-center gap-5">Retiro Acometida <input type="checkbox" class="checkbox" data-field="servicioRetiroAcometida"></label>
+    </div>
+
+    <strong>1.3 MATERIALES EMPLEADOS</strong>
+    <div class="materiales-grid">
+        <div class="flex-col gap-5">
+            <div class="mat-item"><label>Coaxial c/mens RG6</label><input type="text" class="input-box" data-field="mat_coaxialMens"></div>
+            <div class="mat-item"><label>Coaxial s/mens RG6</label><input type="text" class="input-box" data-field="mat_coaxialSinMens"></div>
+            <div class="mat-item"><label>Cable telefónico</label><input type="text" class="input-box" data-field="mat_cableTelefonico"></div>
+            <div class="mat-item"><label>Cable UTP</label><input type="text" class="input-box" data-field="mat_cableUTP"></div>
+            <div class="mat-item"><label>Cable Fibra DROP</label><input type="text" class="input-box" data-field="mat_cableFibraDROP"></div>
+        </div>
+        <div class="flex-col gap-5">
+            <div class="mat-item"><label>Conector RJ11</label><input type="text" class="input-box" data-field="mat_conectorRJ11"></div>
+            <div class="mat-item"><label>Conector RJ45</label><input type="text" class="input-box" data-field="mat_conectorRJ45"></div>
+            <div class="mat-item"><label>Conector RG6</label><input type="text" class="input-box" data-field="mat_conectorRG6"></div>
+            <div class="mat-item"><label>Conector OPT</label><input type="text" class="input-box" data-field="mat_conectorOPT"></div>
+            <div class="mat-item"><label>Cable SC/APC</label><input type="text" class="input-box" data-field="mat_cableSCAPC"></div>
+        </div>
+        <div class="flex-col gap-5">
+            <div class="mat-item"><label>Control Remoto</label><input type="text" class="input-box" data-field="mat_controlRemoto"></div>
+            <div class="mat-item"><label>Cable HDMI</label><input type="text" class="input-box" data-field="mat_cableHDMI"></div>
+            <div class="mat-item"><label>Roseta Telef.</label><input type="text" class="input-box" data-field="mat_rosetaTelef"></div>
+            <div class="mat-item"><label>Roseta Optica</label><input type="text" class="input-box" data-field="mat_rosetaOptica"></div>
+            <div class="mat-item"><label>Anclaje P</label><input type="text" class="input-box" data-field="mat_anclaje"></div>
+        </div>
+        <div class="flex-col gap-5">
+            <div class="mat-item"><label>Teléfono</label><input type="text" class="input-box" data-field="mat_telefono"></div>
+            <div class="mat-item"><label>Chapa Q</label><input type="text" class="input-box" data-field="mat_chapaQ"></div>
+            <div class="mat-item">
+                <label>Divisor 2V</label><input type="checkbox" class="checkbox" data-field="mat_divisor2V" style="margin: 0 5px;">
+                <label>3V</label><input type="checkbox" class="checkbox" data-field="mat_divisor3V" style="margin: 0 5px;">
+                <label>4V</label><input type="checkbox" class="checkbox" data-field="mat_divisor4V" style="margin-left: 5px;">
+            </div>
+            <div class="mat-item"></div>
+            <div class="mat-item"></div>
+        </div>
+        <div class="flex-col gap-5">
+            <label style="font-weight: bold; margin-bottom: -5px;">Otros</label>
+            <div class="mat-item"><input type="text" class="line-input-dotted" placeholder="Especifique..." data-field="mat_otros1_desc"><input type="text" class="input-box" data-field="mat_otros1_cant"></div>
+            <div class="mat-item"><input type="text" class="line-input-dotted" placeholder="Especifique..." data-field="mat_otros2_desc"><input type="text" class="input-box" data-field="mat_otros2_cant"></div>
+            <div class="mat-item"><input type="text" class="line-input-dotted" placeholder="Especifique..." data-field="mat_otros3_desc"><input type="text" class="input-box" data-field="mat_otros3_cant"></div>
+            <div class="mat-item"><input type="text" class="line-input-dotted" placeholder="Especifique..." data-field="mat_otros4_desc"><input type="text" class="input-box" data-field="mat_otros4_cant"></div>
+            <div class="mat-item"><input type="text" class="line-input-dotted" placeholder="Especifique..." data-field="mat_otros5_desc"><input type="text" class="input-box" data-field="mat_otros5_cant"></div>
+        </div>
+    </div>
+
+    <strong style="display:block; margin-top:15px;">1.4 EQUIPOS INSTALADOS (I) o RETIRADOS (R)</strong>
+    <table>
+        <thead>
+            <tr>
+                <th class="col-ir">I</th>
+                <th class="col-ir">R</th>
+                <th>DESCRIPCIÓN</th>
+                <th>MARCA</th>
+                <th>MODELO</th>
+                <th>N° SERIE</th>
+                <th>MAC / PON</th>
+                <th>UA</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" class="table-input" data-field="equipo1_ir"></td><td><input type="text" class="table-input" data-field="equipo1_r"></td><td><input type="text" class="table-input" data-field="equipo1_desc"></td><td><input type="text" class="table-input" data-field="equipo1_marca"></td><td><input type="text" class="table-input" data-field="equipo1_modelo"></td><td><input type="text" class="table-input" data-field="equipo1_serie"></td><td><input type="text" class="table-input" data-field="equipo1_mac"></td><td><input type="text" class="table-input" data-field="equipo1_ua"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="table-input" data-field="equipo2_ir"></td><td><input type="text" class="table-input" data-field="equipo2_r"></td><td><input type="text" class="table-input" data-field="equipo2_desc"></td><td><input type="text" class="table-input" data-field="equipo2_marca"></td><td><input type="text" class="table-input" data-field="equipo2_modelo"></td><td><input type="text" class="table-input" data-field="equipo2_serie"></td><td><input type="text" class="table-input" data-field="equipo2_mac"></td><td><input type="text" class="table-input" data-field="equipo2_ua"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="table-input" data-field="equipo3_ir"></td><td><input type="text" class="table-input" data-field="equipo3_r"></td><td><input type="text" class="table-input" data-field="equipo3_desc"></td><td><input type="text" class="table-input" data-field="equipo3_marca"></td><td><input type="text" class="table-input" data-field="equipo3_modelo"></td><td><input type="text" class="table-input" data-field="equipo3_serie"></td><td><input type="text" class="table-input" data-field="equipo3_mac"></td><td><input type="text" class="table-input" data-field="equipo3_ua"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="table-input" data-field="equipo4_ir"></td><td><input type="text" class="table-input" data-field="equipo4_r"></td><td><input type="text" class="table-input" data-field="equipo4_desc"></td><td><input type="text" class="table-input" data-field="equipo4_marca"></td><td><input type="text" class="table-input" data-field="equipo4_modelo"></td><td><input type="text" class="table-input" data-field="equipo4_serie"></td><td><input type="text" class="table-input" data-field="equipo4_mac"></td><td><input type="text" class="table-input" data-field="equipo4_ua"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="table-input" data-field="equipo5_ir"></td><td><input type="text" class="table-input" data-field="equipo5_r"></td><td><input type="text" class="table-input" data-field="equipo5_desc"></td><td><input type="text" class="table-input" data-field="equipo5_marca"></td><td><input type="text" class="table-input" data-field="equipo5_modelo"></td><td><input type="text" class="table-input" data-field="equipo5_serie"></td><td><input type="text" class="table-input" data-field="equipo5_mac"></td><td><input type="text" class="table-input" data-field="equipo5_ua"></td>
+            </tr>
+        </tbody>
+    </table>
+    <div style="text-align: right; font-size: 9px; margin-top: 3px;">Nota: Los equipos instalados son propiedad de Claro.</div>
+
+    <hr class="divider">
+
+    <h3>II. INFORMACIÓN TÉCNICA</h3>
+    <div class="info-tecnica-grid">
+        <div>
+            <strong>2.1. NIVELES</strong>
+            <div class="tech-box"><label>Downstream/Rx ONT</label><input type="text" class="tech-input" data-field="nivel_downstreamRx"><label style="text-align:left;">SINR</label><input type="text" class="tech-input" data-field="nivel_sinr"></div>
+            <div class="tech-box"><label>Upstream/Tx ONT</label><input type="text" class="tech-input" data-field="nivel_upstreamTx"><label style="text-align:left;">RSRP</label><input type="text" class="tech-input" data-field="nivel_rsrp"></div>
+        </div>
+        <div>
+            <strong>2.2. SVA</strong>
+            <div class="flex align-center gap-5" style="margin-bottom: 5px;">
+                <label class="flex align-center gap-5">Hunting <input type="checkbox" class="checkbox" data-field="sva_hunting"></label> 
+                <label class="flex align-center gap-5">Central virtual <input type="checkbox" class="checkbox" data-field="sva_centralVirtual"></label>
+            </div>
+            <div class="flex align-center gap-5" style="margin-bottom: 5px;">
+                <label class="flex align-center gap-5">IP Fija <input type="checkbox" class="checkbox" data-field="sva_ipFija"></label> 
+                <label class="flex align-center gap-5">Port Forwarding <input type="checkbox" class="checkbox" data-field="sva_portForwarding"></label>
+            </div>
+            <div class="flex align-center gap-5">
+                IP <input type="text" class="tech-input-long" style="width: 100%;" data-field="sva_ip">
+            </div>
+        </div>
+        <div>
+            <strong>2.3. WIFI</strong>
+            <div class="tech-box" style="justify-content: flex-start;"><label style="flex-grow:0; width:70px;">SSID 2.4 GHZ</label><input type="text" class="tech-input-long" data-field="wifi_ssid24"></div>
+            <div class="tech-box" style="justify-content: flex-start;"><label style="flex-grow:0; width:70px;">SSID 5.0 GHZ</label><input type="text" class="tech-input-long" data-field="wifi_ssid50"></div>
+        </div>
+    </div>
+
+    <h3>III. LLENAR SÓLO EN CASO DE MANTENIMIENTO/RECLAMO POR CALIDAD (Obligatorio)</h3>
+    <div style="margin-bottom: 2px;"><strong>3.1 Inconveniente presentado (describir detalladamente):</strong></div>
+    <textarea class="text-area" data-field="inconveniente"></textarea>
+
+    <div class="mantenimiento-grid">
+        <div>
+            <div style="margin-top: 5px; margin-bottom: 2px;"><strong>3.2 ACCIONES REALIZADAS PARA ATENDER EL INCONVENIENTE (Motivo Solución)</strong></div>
+            <table>
+                <thead><tr><th style="width:40px;">COD</th><th>ACCIONES</th></tr></thead>
+                <tbody>
+                    <tr><td><input type="text" class="table-input" data-field="accion1_cod"></td><td><input type="text" class="table-input" data-field="accion1_desc"></td></tr>
+                    <tr><td><input type="text" class="table-input" data-field="accion2_cod"></td><td><input type="text" class="table-input" data-field="accion2_desc"></td></tr>
+                    <tr><td><input type="text" class="table-input" data-field="accion3_cod"></td><td><input type="text" class="table-input" data-field="accion3_desc"></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <div style="margin-top: 5px; margin-bottom: 2px;"><strong>3.3 FACTIBILIDAD DE SOLUCIÓN (Llenado por el personal técnico)</strong></div>
+            <div class="flex align-center gap-10" style="margin-bottom: 5px;">
+                El inconveniente se pudo solucionar? (Marcar con un Aspa)
+                <label class="flex align-center gap-5">SI <input type="checkbox" class="checkbox" data-field="factibilidad_si"></label>
+                <label class="flex align-center gap-5">NO <input type="checkbox" class="checkbox" data-field="factibilidad_no"></label>
+            </div>
+            <div class="flex align-start gap-5">
+                <span style="width: 150px;">Indicar por qué NO se pudo solucionar y si se debe a causas ajenas a CLARO</span>
+                <textarea class="input-box" style="flex-grow: 1; height: 35px; resize: none;" data-field="factibilidad_razon"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="comentarios-grid">
+        <div>
+            <h3>IV. COMENTARIOS Y OBSERVACIONES <span style="font-weight: normal; text-transform:none;">(Llenado por el personal técnico)</span></h3>
+            <textarea class="comentarios-box" data-field="comentarios_tecnico"></textarea>
+        </div>
+        <div>
+            <h3 style="color:transparent; user-select:none;">. <span style="color:#000; font-weight: normal; text-transform:none;">(Llenado por el Cliente)</span></h3>
+            <textarea class="comentarios-box" data-field="comentarios_cliente"></textarea>
+        </div>
+    </div>
+
+    <div class="nota-legal">
+        Los Equipos instalados y que son entregados en comodato en el marco del Acuerdo para la Prestación del servicio de Telefonía Fija, Acceso a Internet y/o Radiodifusión por Cable que haya suscrito con CLARO son de propiedad de CLARO. EL CLIENTE declara haber recibido los mismos en perfecto estado y operativos. CLARO no es responsable por fallas, daños o desperfectos en los dispositivos y/o equipos propiedad de EL CLIENTE (televisor, interruptor, teléfono, PC, laptop, reproductores de video, consolas de videojuegos, entre otros) derivados de la manipulación por parte de EL CLIENTE o terceros.
+    </div>
+
+</div>
+
+<script>
+    const STORAGE_KEY = 'acta_tecnica_datos';
+    
+    // Función para mostrar mensajes de estado
+    function mostrarMensaje(texto, tipo = 'success') {
+        const statusDiv = document.getElementById('statusMessage');
+        statusDiv.textContent = texto;
+        statusDiv.className = 'status-message ' + tipo;
+        statusDiv.style.display = 'block';
+        setTimeout(() => {
+            statusDiv.style.display = 'none';
+        }, 3000);
+    }
+    
+    // Función para guardar datos en localStorage
+    function guardarDatos() {
+        const datos = {};
+        const campos = document.querySelectorAll('[data-field]');
+        
+        campos.forEach(campo => {
+            const fieldName = campo.getAttribute('data-field');
+            if (campo.type === 'checkbox') {
+                datos[fieldName] = campo.checked;
+            } else {
+                datos[fieldName] = campo.value;
+            }
+        });
+        
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(datos));
+        mostrarMensaje('✓ Datos guardados exitosamente', 'success');
+    }
+    
+    // Función para cargar datos desde localStorage
+    function cargarDatos() {
+        const datosGuardados = localStorage.getItem(STORAGE_KEY);
+        if (!datosGuardados) {
+            mostrarMensaje('No hay datos guardados', 'error');
+            return;
+        }
+        
+        const datos = JSON.parse(datosGuardados);
+        const campos = document.querySelectorAll('[data-field]');
+        
+        campos.forEach(campo => {
+            const fieldName = campo.getAttribute('data-field');
+            if (datos.hasOwnProperty(fieldName)) {
+                if (campo.type === 'checkbox') {
+                    campo.checked = datos[fieldName];
+                } else {
+                    campo.value = datos[fieldName];
+                }
+            }
+        });
+        
+        mostrarMensaje('✓ Datos cargados exitosamente', 'success');
+    }
+    
+    // Función para exportar datos como JSON
+    function exportarJSON() {
+        const datos = {};
+        const campos = document.querySelectorAll('[data-field]');
+        
+        campos.forEach(campo => {
+            const fieldName = campo.getAttribute('data-field');
+            if (campo.type === 'checkbox') {
+                datos[fieldName] = campo.checked;
+            } else {
+                datos[fieldName] = campo.value;
+            }
+        });
+        
+        const fechaActual = new Date().toISOString().split('T')[0];
+        const nombreArchivo = `acta_tecnica_${fechaActual}.json`;
+        const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = nombreArchivo;
+        link.click();
+        URL.revokeObjectURL(url);
+        
+        mostrarMensaje('✓ JSON exportado: ' + nombreArchivo, 'success');
+    }
+    
+    // Función para limpiar el formulario
+    function limpiarFormulario() {
+        if (confirm('¿Está seguro de que desea limpiar todos los campos?')) {
+            const campos = document.querySelectorAll('[data-field]');
+            campos.forEach(campo => {
+                if (campo.type === 'checkbox') {
+                    campo.checked = false;
+                } else {
+                    campo.value = '';
+                }
+            });
+            mostrarMensaje('✓ Formulario limpiado', 'success');
+        }
+    }
+    
+    // Auto-guardar cada 30 segundos
+    setInterval(() => {
+        if (document.hasFocus()) {
+            guardarDatos();
+        }
+    }, 30000);
+    
+    // Cargar datos al abrir la página
+    window.addEventListener('load', () => {
+        cargarDatos();
+    });
+</script>
+
+</body>
+</html>
